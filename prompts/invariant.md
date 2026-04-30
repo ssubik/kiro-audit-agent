@@ -1,24 +1,21 @@
 # Invariant Prompt
 
-Use this prompt when you want Kiro to generate or refine invariant tests for a Solidity system.  Invariant tests are property‑based tests that must hold true for all sequences of valid interactions with the contract.  They are useful for catching subtle state corruption or accounting errors.
+Use this template to generate Foundry invariants tied to concrete findings.
 
-## Instructions
+## Requirements
 
-1. **Identify the invariant**: Based on a security rule or candidate finding, specify what relationship must always be true.  For example:
-   - `totalSupply == sum(userBalances)`
-   - `collateral >= liabilities`
-   - `contractBalance >= totalDeposits`
-   - `only authorised roles can modify critical state`
-   - `nonce must increase monotonically`
-2. **Design the test**: Suggest how to implement the invariant using Foundry’s invariant testing framework.  This typically involves:
-   - Creating a handler contract that calls various functions in random order.
-   - Setting up a property function annotated with `@invariant` to assert the invariant.
-   - Initialising the contract under test and seeding it with realistic state.
-3. **Include fuzzing**: Consider using fuzz inputs for deposit amounts, addresses or other variables to explore edge cases.
-4. **Link to the rule or finding**: Reference the rule ID or candidate ID that motivated the invariant.  Explain why the invariant is necessary.
+1. Reference the triggering `Rxxx` or `Uxxx` ID.
+2. Define the invariant in plain language and code-level state terms.
+3. Provide a Foundry-oriented skeleton with:
+   - setup/handler design
+   - `invariant_*` function names
+   - assertions tied to protocol accounting/authorization constraints
+4. Include at least one adversarial sequence that should fail if bug exists.
+5. Explain expected pass/fail behavior.
 
-## Example prompt to Kiro
+## Example Invocation
 
-```
-Using prompts/invariant.md, generate an invariant test for rule R027 (Missing or Weak Access Control).  The invariant should assert that only the owner or authorised role can modify the contract’s admin configuration.  Provide the Foundry test code skeleton and explain how it enforces the property.
+```text
+Using prompts/invariant.md, build an invariant test for R001 (access control)
+showing that unauthorized callers cannot mutate admin configuration.
 ```
