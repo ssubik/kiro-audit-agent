@@ -1,0 +1,31 @@
+name: Audit CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install audit tools
+        run: |
+          npm install --save-dev solhint prettier prettier-plugin-solidity
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: latest
+      - name: Lint Solidity
+        run: npx solhint 'contracts/**/*.sol'
+      - name: Check formatting
+        run: npx prettier --check 'contracts/**/*.sol'
+      - name: Run Foundry tests
+        run: |
+          forge test --match-path 'test/**/*'

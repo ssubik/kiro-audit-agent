@@ -1,0 +1,29 @@
+{
+  "raw_findings": 242,
+  "classified_findings": 54,
+  "unclassified_findings": 188,
+  "classified_rules": 52,
+  "unclassified_candidate_rules": 156,
+  "confirmed_rules": 2,
+  "candidate_rules": 50,
+  "classification_by_type": {
+    "arithmetic_precision": 37,
+    "access_control": 14,
+    "reentrancy": 1,
+    "oracle_manipulation": 2
+  },
+  "classification_by_swc": {
+    "SWC-101": 37,
+    "SWC-105": 14,
+    "SWC-107": 1,
+    "SWC-120": 2
+  },
+  "unclassified_candidate_by_type": {
+    "compatibility_gap": 36,
+    "generic_manual_triage": 83,
+    "input_error_validation": 23,
+    "loop_logic_bug": 9,
+    "nonce_or_sequence_logic": 5
+  },
+  "hydrated_from_github_count": 0
+}

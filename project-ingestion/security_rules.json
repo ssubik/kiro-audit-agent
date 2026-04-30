@@ -1,0 +1,1991 @@
+[
+  {
+    "id": "R001",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: The instantiate function creates a new instance of a Wasm smart contract for a given code ID. This function is designed to interact with a Wasm contract through the Ethereum Virtual Machine (EVM). It processes the admin parameter, but there is a missing validity check for this parameter. ```go // instantiate creates a new instance of a Wasm smart contract for some Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Missing Validity Check for the admin Parameter in the instantiate Function of x/evm/precompile/wasm.go"
+      ],
+      "sample_summaries": [
+        "Finding summary: The instantiate function creates a new instance of a Wasm smart contract for a given code ID. This function is designed to interact with a Wasm contract through the Ethereum Virtual Machine (EVM). It processes the admin parameter, but there is a missing validity check for this parameter. ```go // instantiate creates a new instance of a Wasm smart contract for some"
+      ],
+      "matched_patterns": [
+        "\\badmin\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/43"
+    ]
+  },
+  {
+    "id": "R002",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: #### **Summary** The updateBlockBloom function in the smart contract module lacks proper access control checks, allowing unauthorized entities to manipulate critical blockchain state variables, including the BlockBloom filter and BlockLogSize. This vulnerability can lead to corruption of the blockchain state and potential denial of service (DoS) attacks. ##### Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Access Control Vulnerability in updateBlockBloom Function"
+      ],
+      "sample_summaries": [
+        "Finding summary: #### **Summary** The updateBlockBloom function in the smart contract module lacks proper access control checks, allowing unauthorized entities to manipulate critical blockchain state variables, including the BlockBloom filter and BlockLogSize. This vulnerability can lead to corruption of the blockchain state and potential denial of service (DoS) attacks. #####"
+      ],
+      "matched_patterns": [
+        "\\baccess control\\b",
+        "\\bunauthori[sz]ed\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/42"
+    ]
+  },
+  {
+    "id": "R003",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact Inadequate Validation for EVM Messages in Authorization (Authz) Root Cause: - The AnteDecoratorAuthzGuard does not sufficiently validate the types of messages being authorized through the Cosmos SDK authz module. This creates a risk where malicious EVM-specific messages can bypass intended chec Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Inadequate validation for EVM messages could lead to unauthorized EVM execution and potential DoS"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact Inadequate Validation for EVM Messages in Authorization (Authz) Root Cause: - The AnteDecoratorAuthzGuard does not sufficiently validate the types of messages being authorized through the Cosmos SDK authz module. This creates a risk where malicious EVM-specific messages can bypass intended chec"
+      ],
+      "matched_patterns": [
+        "\\bunauthori[sz]ed\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/38"
+    ]
+  },
+  {
+    "id": "R004",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact Missing Replay Protection for Wrapped Messages Root Cause: AnteDecoratorAuthzGuard does not appear to validate replay protections for MsgExec or MsgGrant. Malicious actors could replay previously authorized transactions, exploiting the authz functionality. Impact: - Enables double-execution of Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Missing replay protection could lead to Double-spending and unauthorized re-execution"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact Missing Replay Protection for Wrapped Messages Root Cause: AnteDecoratorAuthzGuard does not appear to validate replay protections for MsgExec or MsgGrant. Malicious actors could replay previously authorized transactions, exploiting the authz functionality. Impact: - Enables double-execution of"
+      ],
+      "matched_patterns": [
+        "\\bunauthori[sz]ed\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/37"
+    ]
+  },
+  {
+    "id": "R005",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact Overly Broad Generic Grants Root Cause: The code permits generic grants (authz.NewGenericAuthorization) for non-EVM messages without sufficient granularity or constraints. This creates potential for privilege escalation, where grants are misused for unintended purposes. Impact: Users might exp Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Overly broad generic grants could cause privilege escalation and misuse of staking or governance actions"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact Overly Broad Generic Grants Root Cause: The code permits generic grants (authz.NewGenericAuthorization) for non-EVM messages without sufficient granularity or constraints. This creates potential for privilege escalation, where grants are misused for unintended purposes. Impact: Users might exp"
+      ],
+      "matched_patterns": [
+        "\\bgovernance\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/36"
+    ]
+  },
+  {
+    "id": "R006",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact While the creation of bank tokens is permissionless (for any ERC20 token that exists on Nibiru's EVM) it opens up a vulnerability. The lack of any access control or whitelist, allows for malicious users to deploy a single ERC20 contract with minimal code in it as an implementation and a ton of Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Users can halt chain by spam-creating FunTokens and minting bank coins for a huge amount of spam addresses"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact While the creation of bank tokens is permissionless (for any ERC20 token that exists on Nibiru's EVM) it opens up a vulnerability. The lack of any access control or whitelist, allows for malicious users to deploy a single ERC20 contract with minimal code in it as an implementation and a ton of"
+      ],
+      "matched_patterns": [
+        "\\baccess control\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/20"
+    ]
+  },
+  {
+    "id": "R007",
+    "status": "confirmed",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact The Mint function in erc20.go allows an arbitrary from address to be specified without validating that the caller is the actual owner of the from address. This lack of validation allows an attacker to impersonate any address, including the contract owner, to mint tokens. An adversary can mint Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 2,
+      "sources": {
+        "code4rena": 2
+      },
+      "sample_titles": [
+        "Arbitrary minting of tokens",
+        "Adversary can drain the token holders due to missing signature validation"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact The Mint function in erc20.go allows an arbitrary from address to be specified without validating that the caller is the actual owner of the from address. This lack of validation allows an attacker to impersonate any address, including the contract owner, to mint tokens. An adversary can mint",
+        "Finding summary: ## Finding description and impact The Transfer function in erc20.go allows an arbitrary from address to be specified without validating that the caller is the actual owner of the from address. This lack of validation allows an arbitrary to impersonate any address, including the token holder, to transfer tokens. This leads"
+      ],
+      "matched_patterns": [
+        "\\bowner\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/19",
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/16"
+    ]
+  },
+  {
+    "id": "R008",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: abdulsamijay High # Unauthorized Stake Remove Cancellation of Reputors or Workers by any user ## Summary The Allora AppChain's CancelRemoveStake & RemoveDelegateStake function, allowing unauthorized users to cancel the stake removal process of any reputer or worker or their delegators. ## Vulnerability Detail The CancelRemoveStake function in the Allora AppChain is designed to allow reputers to cancel their stake removal requests during the delay window. However, the function Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "abdulsamijay - Unauthorized Stake Remove Cancellation of Reputors or Workers by any user"
+      ],
+      "sample_summaries": [
+        "Finding summary: abdulsamijay High # Unauthorized Stake Remove Cancellation of Reputors or Workers by any user ## Summary The Allora AppChain's CancelRemoveStake & RemoveDelegateStake function, allowing unauthorized users to cancel the stake removal process of any reputer or worker or their delegators. ## Vulnerability Detail The CancelRemoveStake function in the Allora AppChain is designed to allow reputers to cancel their stake removal requests during the delay window. However, the function"
+      ],
+      "matched_patterns": [
+        "\\bunauthori[sz]ed\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/134"
+    ]
+  },
+  {
+    "id": "R009",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: abdulsamijay High # Unauthorized Stake & DelegateStake Removal of Reputers or Worker by any User ## Summary The Allora AppChain's RemoveStake and RemoveDelegateStake functions, allowing unauthorized users to remove the stakes of any reputer /delegators. This issue arises due to insufficient verification of the message sender's identity and authority ## Vulnerability Detail The RemoveStake and RemoveDelegateStake functions in the Allora AppChain are designed to allow reputers an Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "abdulsamijay - Unauthorized Stake & DelegateStake Removal of Reputers or Worker by any User"
+      ],
+      "sample_summaries": [
+        "Finding summary: abdulsamijay High # Unauthorized Stake & DelegateStake Removal of Reputers or Worker by any User ## Summary The Allora AppChain's RemoveStake and RemoveDelegateStake functions, allowing unauthorized users to remove the stakes of any reputer /delegators. This issue arises due to insufficient verification of the message sender's identity and authority ## Vulnerability Detail The RemoveStake and RemoveDelegateStake functions in the Allora AppChain are designed to allow reputers an"
+      ],
+      "matched_patterns": [
+        "\\bunauthori[sz]ed\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/133"
+    ]
+  },
+  {
+    "id": "R010",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: abdulsamijay High # Unauthorized Deregistration of Reputers and Workers ## Summary Allora AppChain's RemoveRegistration function allows unauthorized users to remove any registered reputer or worker. This issue arises due to insufficient verification of the message sender's identity and authority. Malicious actors can exploit this vulnerability by crafting messages that appear to be from a valid reputer or worker, leading to unauthorized deregistration and potential collusion to maximize rewar Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "abdulsamijay - Unauthorized Deregistration of Reputers and Workers"
+      ],
+      "sample_summaries": [
+        "Finding summary: abdulsamijay High # Unauthorized Deregistration of Reputers and Workers ## Summary Allora AppChain's RemoveRegistration function allows unauthorized users to remove any registered reputer or worker. This issue arises due to insufficient verification of the message sender's identity and authority. Malicious actors can exploit this vulnerability by crafting messages that appear to be from a valid reputer or worker, leading to unauthorized deregistration and potential collusion to maximize rewar"
+      ],
+      "matched_patterns": [
+        "\\bunauthori[sz]ed\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/130"
+    ]
+  },
+  {
+    "id": "R011",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "medium",
+    "description": "Finding summary: LZ_security Medium # Malicious Whitelist Admin can prevent itself from being deleted ## Summary Malicious Whitelist Admin can prevent itself from being deleted ## Vulnerability Detail Adding a Whitelist Admin checks whether the admin is in the list, and removing the Whitelist also checks whether the admin is in the list. After an admin is added to the admin list, you can add or remove other admins. If there is an admin who is malicious, he can make himself never removed by: 1. Add one of h Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "LZ_security - Malicious Whitelist Admin can prevent itself from being deleted"
+      ],
+      "sample_summaries": [
+        "Finding summary: LZ_security Medium # Malicious Whitelist Admin can prevent itself from being deleted ## Summary Malicious Whitelist Admin can prevent itself from being deleted ## Vulnerability Detail Adding a Whitelist Admin checks whether the admin is in the list, and removing the Whitelist also checks whether the admin is in the list. After an admin is added to the admin list, you can add or remove other admins. If there is an admin who is malicious, he can make himself never removed by: 1. Add one of h"
+      ],
+      "matched_patterns": [
+        "\\badmin\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/113"
+    ]
+  },
+  {
+    "id": "R012",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "high",
+    "description": "Finding summary: carrotsmuggler High # Anyone can overwrite reputer p2pkey values ## Summary Anyone can overwrite reputer p2pkey values ## Vulnerability Detail The Register function in the msg_server_registrations.go file is used to register new reputers or workers. This function also takes in a LibP2PKey value to identify the reputer/worker. ```go nodeInfo := types.OffchainNode{ NodeAddress: msg.Sender, LibP2PKey: msg.LibP2PKey, MultiAddress: msg.MultiAddress, Owner: Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "carrotsmuggler - Anyone can overwrite reputer p2pkey values"
+      ],
+      "sample_summaries": [
+        "Finding summary: carrotsmuggler High # Anyone can overwrite reputer p2pkey values ## Summary Anyone can overwrite reputer p2pkey values ## Vulnerability Detail The Register function in the msg_server_registrations.go file is used to register new reputers or workers. This function also takes in a LibP2PKey value to identify the reputer/worker. ```go nodeInfo := types.OffchainNode{ NodeAddress: msg.Sender, LibP2PKey: msg.LibP2PKey, MultiAddress: msg.MultiAddress, Owner:"
+      ],
+      "matched_patterns": [
+        "\\bowner\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/94"
+    ]
+  },
+  {
+    "id": "R013",
+    "status": "candidate",
+    "title": "Missing or Weak Access Control",
+    "type": "access_control",
+    "swc_id": "SWC-105",
+    "severity": "high",
+    "description": "Finding summary: imsrybr0 High # Anyone can override reputers and worker nodes information by using the same LibP2PKey ## Summary Anyone can override reputers and worker nodes information by using the same LibP2PKey. ## Vulnerability Detail * LibP2PKey and Owner are user inputs. * LibP2PKey is used as a key to save reputers and worker nodes information. * There is no validation on the existence of a node with the same LibP2PKey when registering a reputer or a worker. * The Owner is used by the Al Generalized rule: A privileged function can be called by an unauthorized actor or a sensitive role can be changed without proper authorization.",
+    "detection_pattern": "Look for external/public functions that modify owner, admin, roles, implementation addresses, fee parameters, oracle addresses, treasury, minting rights, pausing, or protocol configuration without explicit access checks.",
+    "example_code": "function setOwner(address newOwner) external {\n    owner = newOwner;\n}",
+    "exploit_scenario": [
+      "Attacker identifies a privileged state-changing function.",
+      "The function lacks onlyOwner, AccessControl, governance, or equivalent checks.",
+      "Attacker changes ownership/configuration or triggers privileged movement of funds.",
+      "Protocol control or assets are compromised."
+    ],
+    "remediation": "Use explicit role-based access control, restrict initializers and upgrade paths, emit events for privileged changes, and test every admin function as an attacker.",
+    "test_template": "function testUnauthorizedAdminCallReverts() public {\n    vm.prank(attacker);\n    vm.expectRevert();\n    target.adminFunction();\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "imsrybr0 - Anyone can override reputers and worker nodes information by using the same LibP2PKey"
+      ],
+      "sample_summaries": [
+        "Finding summary: imsrybr0 High # Anyone can override reputers and worker nodes information by using the same LibP2PKey ## Summary Anyone can override reputers and worker nodes information by using the same LibP2PKey. ## Vulnerability Detail * LibP2PKey and Owner are user inputs. * LibP2PKey is used as a key to save reputers and worker nodes information. * There is no validation on the existence of a node with the same LibP2PKey when registering a reputer or a worker. * The Owner is used by the Al"
+      ],
+      "matched_patterns": [
+        "\\bowner\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/37"
+    ]
+  },
+  {
+    "id": "R014",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact Currently, refunds are incorrectly calculated after EVM message is applied. This is because the function EthereumTx() uses different formula rather than using refund that's calculated inside of the ApplyEvmMsg() function. This leads to a situation where NibiruVM loses compatibility with EVM as refunds are handled differently. ## Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Refund logic is not correct when applying EVM message"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact Currently, refunds are incorrectly calculated after EVM message is applied. This is because the function EthereumTx() uses different formula rather than using refund that's calculated inside of the ApplyEvmMsg() function. This leads to a situation where NibiruVM loses compatibility with EVM as refunds are handled differently. ##"
+      ],
+      "matched_patterns": [
+        "\\brefund\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/83"
+    ]
+  },
+  {
+    "id": "R015",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact At the moment fullRefundLeftover gas is created to handle the special behavior applied only to the FunToken related messages. This behavior differs from EIP3529 where refund quotient is capped at the value of 5. However, the EthereumTx() does not have any check on whether the message is related to the FunToken operation or not a Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "fullRefundLeftoverGas is always set to false as it's not checked if the message is the inner one"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact At the moment fullRefundLeftover gas is created to handle the special behavior applied only to the FunToken related messages. This behavior differs from EIP3529 where refund quotient is capped at the value of 5. However, the EthereumTx() does not have any check on whether the message is related to the FunToken operation or not a"
+      ],
+      "matched_patterns": [
+        "\\brefund\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/78"
+    ]
+  },
+  {
+    "id": "R016",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact The current implementation of the SetTxDefaults() sets a priority gas fee instead of a user which is not correct as the value is optional and can be bigger than the amount that a user wants to pay (the value specified can be 0 as well but in this scenario the tx will be likely to not be processed): Proof idea: According Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "MaxPriorityFeePerGas and MaxFeePerGas are specified for a user which is not correct"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact The current implementation of the SetTxDefaults() sets a priority gas fee instead of a user which is not correct as the value is optional and can be bigger than the amount that a user wants to pay (the value specified can be 0 as well but in this scenario the tx will be likely to not be processed): Proof idea: According"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/74"
+    ]
+  },
+  {
+    "id": "R017",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact Currently only base fee is deducted as a fee from the user's account when executing a message on Ethereum. This leads to an incorrect implementation and deviation from the standard geth client. Proof idea: evmante_gas_consume accounts for the gas that's being consumed during the tx execution: Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Only hardcoded base fee is deducted from the user's account which is not correct"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact Currently only base fee is deducted as a fee from the user's account when executing a message on Ethereum. This leads to an incorrect implementation and deviation from the standard geth client. Proof idea: evmante_gas_consume accounts for the gas that's being consumed during the tx execution:"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/73"
+    ]
+  },
+  {
+    "id": "R018",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact At the moment ApplyEvmMsg() does not account for coinbase fees breaking compatibility with the standard EVM execution client. There is always a priority fee parameter that reflects how much fees has to be paid to the validator of the block but it's currently missing. Proof idea: Take a look at the geth client implementat Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Coinbase fees are not transferred to the coinbase address deviating from the standard execution client spec"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact At the moment ApplyEvmMsg() does not account for coinbase fees breaking compatibility with the standard EVM execution client. There is always a priority fee parameter that reflects how much fees has to be paid to the validator of the block but it's currently missing. Proof idea: Take a look at the geth client implementat"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/72"
+    ]
+  },
+  {
+    "id": "R019",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Summary When using fee-on-transfer tokens with Nibiru's FunToken bridge, users suffer a systematic loss of funds through unexpected double fees during round-trip conversions. The bridge incorrectly applies the fee-on-transfer mechanism during the conversion back to ERC20, when it sho Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Fee-on-Transfer Tokens Incur Unexpected Double Fees During Round-Trip Conversions, Leading to Significant User Fund Loss"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Summary When using fee-on-transfer tokens with Nibiru's FunToken bridge, users suffer a systematic loss of funds through unexpected double fees during round-trip conversions. The bridge incorrectly applies the fee-on-transfer mechanism during the conversion back to ERC20, when it sho"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/67"
+    ]
+  },
+  {
+    "id": "R020",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact The Nibiru chain is designed to handle FOT tokens properly but is incompatible with ERC20 tokens where balances can change outside of transfers (also known as rebasing tokens). The problem arises from the fact that Nibiru doesn't keep any internal accounting for the ERC20 tokens for which FunToke Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Nibiru is incompatible with rebasing ERC20 tokens"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact The Nibiru chain is designed to handle FOT tokens properly but is incompatible with ERC20 tokens where balances can change outside of transfers (also known as rebasing tokens). The problem arises from the fact that Nibiru doesn't keep any internal accounting for the ERC20 tokens for which FunToke"
+      ],
+      "matched_patterns": [
+        "\\baccounting\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/65"
+    ]
+  },
+  {
+    "id": "R021",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: FunToken is not compatible with tokens that change balance outside of transfers Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "FunToken is not compatible with tokens that change balance outside of transfers"
+      ],
+      "sample_summaries": [
+        "Finding summary: FunToken is not compatible with tokens that change balance outside of transfers"
+      ],
+      "matched_patterns": [
+        "\\bbalance\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/63"
+    ]
+  },
+  {
+    "id": "R022",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact The code in the Oracle precompile's exchange rate query functionality to properly handle asset pair strings containing colons. The issue occurs because the system uses colons (:) as delimiters for asset pairs, but colons are also valid characters in Cosmos SDK denominations. This issue manifests Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Invalid Asset Pair Parsing Due to Colon Delimiter Conflict"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact The code in the Oracle precompile's exchange rate query functionality to properly handle asset pair strings containing colons. The issue occurs because the system uses colons (:) as delimiters for asset pairs, but colons are also valid characters in Cosmos SDK denominations. This issue manifests"
+      ],
+      "matched_patterns": [
+        "\\bexchange rate\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/55"
+    ]
+  },
+  {
+    "id": "R023",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact In msg_server.go, the ApplyEvmMsg function enforces that all EVM message values must be multiples of 1 micronibi (10^12 wei) by rounding the input value using ParseWeiAsMultipleOfMicronibi. This poses a significant issue as many Solidity contracts validate exact wei values in their logic usi Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "EVM Message Value Rounding Could Lead to Failed Contract Interactions and Stuck Funds"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact In msg_server.go, the ApplyEvmMsg function enforces that all EVM message values must be multiples of 1 micronibi (10^12 wei) by rounding the input value using ParseWeiAsMultipleOfMicronibi. This poses a significant issue as many Solidity contracts validate exact wei values in their logic usi"
+      ],
+      "matched_patterns": [
+        "\\brounding\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/52"
+    ]
+  },
+  {
+    "id": "R024",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact The CanTransferDecorator in Nibiru's ante handler checks whether a sender has sufficient balance to cover EVM transfers. However, when processing multiple messages from the same sender within a single transaction, it validates each message's value transfer individually rather than consid Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "EVM Transfer Validation Fails to Check Combined Value Across Multiple Messages from Same Sender"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact The CanTransferDecorator in Nibiru's ante handler checks whether a sender has sufficient balance to cover EVM transfers. However, when processing multiple messages from the same sender within a single transaction, it validates each message's value transfer individually rather than consid"
+      ],
+      "matched_patterns": [
+        "\\bbalance\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/50"
+    ]
+  },
+  {
+    "id": "R025",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact In funtoken_from_coin.go, when creating a FunToken mapping from a Bank Coin, the decimal value from the Bank Coin's metadata is cast unsafely from an integer to uint8 without checking for overflow. This affects the deployERC20ForBankCoin function which deploys the corresponding ERC20 to Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "FunToken creation allows overflow of ERC20 decimals, breaking Bank Coin <-> ERC20 mapping"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact In funtoken_from_coin.go, when creating a FunToken mapping from a Bank Coin, the decimal value from the Bank Coin's metadata is cast unsafely from an integer to uint8 without checking for overflow. This affects the deployERC20ForBankCoin function which deploys the corresponding ERC20 to"
+      ],
+      "matched_patterns": [
+        "\\bdecimal\\b",
+        "\\boverflow\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/49"
+    ]
+  },
+  {
+    "id": "R026",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact The EVM module incorrectly handles fee-on-transfer tokens when converting bank coins back to ERC20s, resulting in unbacked bank coins remaining in circulation. This breaks the intended 1:1 supply tracking invariant between ERC20 tokens and their bank coin representations. When converting f Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Double fee application breaks supply invariant for fee-on-transfer ERC20s"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact The EVM module incorrectly handles fee-on-transfer tokens when converting bank coins back to ERC20s, resulting in unbacked bank coins remaining in circulation. This breaks the intended 1:1 supply tracking invariant between ERC20 tokens and their bank coin representations. When converting f"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b",
+        "\\binvariant\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/48"
+    ]
+  },
+  {
+    "id": "R027",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact There is a mismatch between how gas fees are deducted and refunded in the EVM implementation: 1. In evmante_gas_consume.go, gas fees are deducted upfront based on each transaction's individual gas limit 2. However, the refund calculation in msg_server.go uses the cumulative block Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Gas refunds use block gas instead of transaction gas, leading to incorrect refund amounts"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact There is a mismatch between how gas fees are deducted and refunded in the EVM implementation: 1. In evmante_gas_consume.go, gas fees are deducted upfront based on each transaction's individual gas limit 2. However, the refund calculation in msg_server.go uses the cumulative block"
+      ],
+      "matched_patterns": [
+        "\\brefund\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/45"
+    ]
+  },
+  {
+    "id": "R028",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact The Nibiru EVM module incorrectly handles fee denominations during transaction validation and building, failing to convert wei amounts to the native unibi denomination. This can lead to significant discrepancies in fee calculations and potentially allow users to pay far fewer fees than Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Inconsistent Fee Denomination Handling in Transaction Validation and Building"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact The Nibiru EVM module incorrectly handles fee denominations during transaction validation and building, failing to convert wei amounts to the native unibi denomination. This can lead to significant discrepancies in fee calculations and potentially allow users to pay far fewer fees than"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/44"
+    ]
+  },
+  {
+    "id": "R029",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact DeleteAccount function is designed to handles contract's suicide call, clearing the balance, contract bytecode, contract state, and its native account. However lack of check is current account is an contract address. The potential problem arises when the function processes non-contract accounts, which may not have associated cont Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Missing Contract Type Check in DeleteAccount Function"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact DeleteAccount function is designed to handles contract's suicide call, clearing the balance, contract bytecode, contract state, and its native account. However lack of check is current account is an contract address. The potential problem arises when the function processes non-contract accounts, which may not have associated cont"
+      ],
+      "matched_patterns": [
+        "\\bbalance\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/40"
+    ]
+  },
+  {
+    "id": "R030",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "high",
+    "description": "Finding summary: ## Finding description and impact NibiruBankKeeper.SyncStateDBWithAccount function in bank_extension.go is responsible for synchronizing the EVM state database (StateDB Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Unlimited Nibi could be minted because evm and bank balance are not synced when staking"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact NibiruBankKeeper.SyncStateDBWithAccount function in bank_extension.go is responsible for synchronizing the EVM state database (StateDB"
+      ],
+      "matched_patterns": [
+        "\\bbalance\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/26"
+    ]
+  },
+  {
+    "id": "R031",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact When a contract is self-destructed, the code, storage, and native balance of the address behind it are wiped clean in the EVM state. For the corresponding Bech32 address of that contract, its unibi bank coins balance and account are deleted from the SDK application state. ```go func (k *Keeper Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Bank module supply invariant can be triggered if a contract owning FunToken bank coins is self-destructed"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact When a contract is self-destructed, the code, storage, and native balance of the address behind it are wiped clean in the EVM state. For the corresponding Bech32 address of that contract, its unibi bank coins balance and account are deleted from the SDK application state. ```go func (k *Keeper"
+      ],
+      "matched_patterns": [
+        "\\bbalance\\b",
+        "\\binvariant\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/21"
+    ]
+  },
+  {
+    "id": "R032",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Summary The Nibiru EVM module's token conversion mechanism contains a critical vulnerability when handling rebasing tokens. The issue stems from an incorrect assumption about the 1:1 relationship between escrowed Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Nibiru's bank coin to EVM balance tracking logic is completely broken for rebasing tokens and would lead to leakage/loss of funds when converting"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Summary The Nibiru EVM module's token conversion mechanism contains a critical vulnerability when handling rebasing tokens. The issue stems from an incorrect assumption about the 1:1 relationship between escrowed"
+      ],
+      "matched_patterns": [
+        "\\bbalance\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/14"
+    ]
+  },
+  {
+    "id": "R033",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Proof of Concept Take a look at x/evm/keeper/msg_server.go#L208-L399: ```go // If msg comes from user, we apply refundQuotient capping the refund to 20% of used gas // If msg is internal (fun Proof idea: Take a look at x/evm/keeper/msg_server.go#L208-L399: ```go // If msg comes from user, we apply refundQuotient capping the refund to 20% of used gas // If msg is internal (fun Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Internal Transactions Bypass EIP-3529 Gas Refund Cap"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Proof of Concept Take a look at x/evm/keeper/msg_server.go#L208-L399: ```go // If msg comes from user, we apply refundQuotient capping the refund to 20% of used gas // If msg is internal (fun Proof idea: Take a look at x/evm/keeper/msg_server.go#L208-L399: ```go // If msg comes from user, we apply refundQuotient capping the refund to 20% of used gas // If msg is internal (fun"
+      ],
+      "matched_patterns": [
+        "\\brefund\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/12"
+    ]
+  },
+  {
+    "id": "R034",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Impact External systems like centralized exchanges that rely on transaction value fields in block data for crediting users may overcompensate users due to a mismatch between the actual executed value and the recorded transaction value. Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Transaction value inconsistency between execution and block data due to value truncation might lead to incorrect data query"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Impact External systems like centralized exchanges that rely on transaction value fields in block data for crediting users may overcompensate users due to a mismatch between the actual executed value and the recorded transaction value."
+      ],
+      "matched_patterns": [
+        "\\btruncat\\w*\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/6"
+    ]
+  },
+  {
+    "id": "R035",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: The IOracle.queryExchangeRate offers the following lookup functionality, in analogy to other oracles like Chainlinks': ```Solidity /// @notice Queries the dated exchange rate for a given pair /// @param pair The asset pair to query. For example, \"ubtc:uusd\" is the /// USD price of BTC and \"unibi:uusd\" is the USD price o Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "IOracle.queryExchangeRate returns incorrect blockTimeMs"
+      ],
+      "sample_summaries": [
+        "Finding summary: The IOracle.queryExchangeRate offers the following lookup functionality, in analogy to other oracles like Chainlinks': ```Solidity /// @notice Queries the dated exchange rate for a given pair /// @param pair The asset pair to query. For example, \"ubtc:uusd\" is the /// USD price of BTC and \"unibi:uusd\" is the USD price o"
+      ],
+      "matched_patterns": [
+        "\\bexchange rate\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/2"
+    ]
+  },
+  {
+    "id": "R036",
+    "status": "confirmed",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: imsrybr0 Medium # Broken invariant : the sum of all (delegateRewardsPerShare * delegated stake - reward debt) = the balance of the /x/bank AlloraPendingRewardForDelegatorAccountName module account when when distributing delegate stakers rewards ## Summary Broken invariant : the sum of all (delegateRewardsPerShare * delegated stake - reward debt) = the balance of the /x/bank AlloraPendingRewardForDelegatorAccountName module account when distributing delegate stakers rewards ## Vulner Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 2,
+      "sources": {
+        "code4rena": 2
+      },
+      "sample_titles": [
+        "imsrybr0 - Broken invariant : the sum of all (delegateRewardsPerShare * delegated stake - reward debt) = the balance of the /x/bank AlloraPendingRewardForDelegatorAccountName module account when when distributing delegate stakers rewards",
+        "imsrybr0 - Broken invariant : the sum of all (delegateRewardsPerShare * delegated stake - reward debt) = the balance of the /x/bank AlloraPendingRewardForDelegatorAccountName module account when calculating reputer and delegator rewards"
+      ],
+      "sample_summaries": [
+        "Finding summary: imsrybr0 Medium # Broken invariant : the sum of all (delegateRewardsPerShare * delegated stake - reward debt) = the balance of the /x/bank AlloraPendingRewardForDelegatorAccountName module account when when distributing delegate stakers rewards ## Summary Broken invariant : the sum of all (delegateRewardsPerShare * delegated stake - reward debt) = the balance of the /x/bank AlloraPendingRewardForDelegatorAccountName module account when distributing delegate stakers rewards ## Vulner",
+        "Finding summary: imsrybr0 High # Broken invariant : the sum of all (delegateRewardsPerShare * delegated stake - reward debt) = the balance of the /x/bank AlloraPendingRewardForDelegatorAccountName module account when calculating reputer and delegator rewards ## Note I did not find this issue on my own, I only saw it being fixed on the main repository in this PR. ## Summary Broken invariant : the sum of all (delegateRewardsPerShare * delegated stake -"
+      ],
+      "matched_patterns": [
+        "\\bbalance\\b",
+        "\\bdebt\\b",
+        "\\binvariant\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/129",
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/127"
+    ]
+  },
+  {
+    "id": "R037",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: lemonmon Medium # msg_server_demand::FundTopic passes incorrect additional fee, potentially activate a topic incorrectly ## Summary msg_server_demand::FundTopic may activate a topic incorrectly, due to incorrect usage of the activateTopicIfWeightAtLeastGlobalMin function. The topic fee was updated before the activateTopicIfWeightAtLeastGlobalMin, but the added fee revenue (= msg.Amount) was passed as additional revenue, resulting in double counting of the added fund for the calculati Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "lemonmon - msg_server_demand::FundTopic passes incorrect additional fee, potentially activate a topic incorrectly"
+      ],
+      "sample_summaries": [
+        "Finding summary: lemonmon Medium # msg_server_demand::FundTopic passes incorrect additional fee, potentially activate a topic incorrectly ## Summary msg_server_demand::FundTopic may activate a topic incorrectly, due to incorrect usage of the activateTopicIfWeightAtLeastGlobalMin function. The topic fee was updated before the activateTopicIfWeightAtLeastGlobalMin, but the added fee revenue (= msg.Amount) was passed as additional revenue, resulting in double counting of the added fund for the calculati"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/122"
+    ]
+  },
+  {
+    "id": "R038",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "high",
+    "description": "Finding summary: lemonmon Medium # msg_server_stake::AddStake calculates the weight incorrectly resulting in incorrect activation of a topic ## Summary Allora calculates the topic's weight based on the stake amount and fee revenue. In the msg_server_stake::AddStake function, the activateTopicIfWeightAtLeastGlobalMin was used incorrectly. It may activate the topic incorrectly. ## Vulnerability Detail When a reputer send transaction to AddStake, at the end of the function, `activateTopi Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "lemonmon - msg_server_stake::AddStake calculates the weight incorrectly resulting in incorrect activation of a topic"
+      ],
+      "sample_summaries": [
+        "Finding summary: lemonmon Medium # msg_server_stake::AddStake calculates the weight incorrectly resulting in incorrect activation of a topic ## Summary Allora calculates the topic's weight based on the stake amount and fee revenue. In the msg_server_stake::AddStake function, the activateTopicIfWeightAtLeastGlobalMin was used incorrectly. It may activate the topic incorrectly. ## Vulnerability Detail When a reputer send transaction to AddStake, at the end of the function, `activateTopi"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/121"
+    ]
+  },
+  {
+    "id": "R039",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: 0x3b Medium # If old coefficient is bigger than the new one then the reputer has it's coeff reduced more than it should ## Summary If the old coefficient are bigger than the new coefficient, then our reputer's coefficients will be set to smaller value which will be lower than the minimum limit, essentially breaking the minStakeFraction invariant. ## Vulnerability The root cause of this issue is located in GetAllReputersOutput, in the place where if `listenedStakeFraction < minStakeFracti Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "0x3b - If old coefficient is bigger than the new one then the reputer has it's coeff reduced more than it should"
+      ],
+      "sample_summaries": [
+        "Finding summary: 0x3b Medium # If old coefficient is bigger than the new one then the reputer has it's coeff reduced more than it should ## Summary If the old coefficient are bigger than the new coefficient, then our reputer's coefficients will be set to smaller value which will be lower than the minimum limit, essentially breaking the minStakeFraction invariant. ## Vulnerability The root cause of this issue is located in GetAllReputersOutput, in the place where if `listenedStakeFraction < minStakeFracti"
+      ],
+      "matched_patterns": [
+        "\\binvariant\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/92"
+    ]
+  },
+  {
+    "id": "R040",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: 0x3b Medium # GetCurrentTopicWeight returns topicFeeRevenue without accounting additionalRevenue ## Summary GetCurrentTopicWeight calculates the topic's weight using the sum of topicFeeRevenue and additionalRevenue, but it returns topicFeeRevenue without adding additionalRevenue. ## Vulnerability Detail GetCurrentTopicWeight is used to calculate the weight of each topic and return it's weight and topicFeeRevenue. The function uses the topic revenue and comb Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "0x3b - GetCurrentTopicWeight returns topicFeeRevenue without accounting additionalRevenue"
+      ],
+      "sample_summaries": [
+        "Finding summary: 0x3b Medium # GetCurrentTopicWeight returns topicFeeRevenue without accounting additionalRevenue ## Summary GetCurrentTopicWeight calculates the topic's weight using the sum of topicFeeRevenue and additionalRevenue, but it returns topicFeeRevenue without adding additionalRevenue. ## Vulnerability Detail GetCurrentTopicWeight is used to calculate the weight of each topic and return it's weight and topicFeeRevenue. The function uses the topic revenue and comb"
+      ],
+      "matched_patterns": [
+        "\\baccounting\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/78"
+    ]
+  },
+  {
+    "id": "R041",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: Kow Medium # Topic could be activated despite not meeting the minimum topic weight threshold due to double counting of added fee revenue ## Summary Topic could be activated despite not meeting the minimum topic weight threshold due to double counting of added fee revenue. ## Vulnerability Detail In FundTopic, after updating the topic fee revenue, the topic may be activated if its new topic weight meets the minimum threshold in activateTopicIfWeightAtLeastGlobalMin. Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Kow - Topic could be activated despite not meeting the minimum topic weight threshold due to double counting of added fee revenue"
+      ],
+      "sample_summaries": [
+        "Finding summary: Kow Medium # Topic could be activated despite not meeting the minimum topic weight threshold due to double counting of added fee revenue ## Summary Topic could be activated despite not meeting the minimum topic weight threshold due to double counting of added fee revenue. ## Vulnerability Detail In FundTopic, after updating the topic fee revenue, the topic may be activated if its new topic weight meets the minimum threshold in activateTopicIfWeightAtLeastGlobalMin."
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/75"
+    ]
+  },
+  {
+    "id": "R042",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "high",
+    "description": "Finding summary: Kow Medium # AlloraPendingRewardForDelegator module account could have insufficient rewards due to truncation ## Summary AlloraPendingRewardForDelegator module account could have insufficient rewards due to truncation. ## Vulnerability Detail In GetRewardForReputerFromTotalReward, the delegator reward for a reputer is calculated and set to AlloraPendingRewardForDelegator. Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Kow - AlloraPendingRewardForDelegator module account could have insufficient rewards due to truncation"
+      ],
+      "sample_summaries": [
+        "Finding summary: Kow Medium # AlloraPendingRewardForDelegator module account could have insufficient rewards due to truncation ## Summary AlloraPendingRewardForDelegator module account could have insufficient rewards due to truncation. ## Vulnerability Detail In GetRewardForReputerFromTotalReward, the delegator reward for a reputer is calculated and set to AlloraPendingRewardForDelegator."
+      ],
+      "matched_patterns": [
+        "\\btruncat\\w*\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/74"
+    ]
+  },
+  {
+    "id": "R043",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: Minato7namikazi Medium # Inconsistent Precision for BaseCoinUnit in Confing ## Vulnerability Detail The issue lies within the RegisterDenoms function: In this line, the math.LegacyNewDecWithPrec(1, AlloraExponent) function is used to create a LegacyDec object with a coefficient of 1 and a precision determined by the value of `AlloraExpo Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Minato7namikazi - Inconsistent Precision for BaseCoinUnit in Confing"
+      ],
+      "sample_summaries": [
+        "Finding summary: Minato7namikazi Medium # Inconsistent Precision for BaseCoinUnit in Confing ## Vulnerability Detail The issue lies within the RegisterDenoms function: In this line, the math.LegacyNewDecWithPrec(1, AlloraExponent) function is used to create a LegacyDec object with a coefficient of 1 and a precision determined by the value of `AlloraExpo"
+      ],
+      "matched_patterns": [
+        "\\bprecision\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/64"
+    ]
+  },
+  {
+    "id": "R044",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "high",
+    "description": "Finding summary: imsrybr0 High # Attacker can slow down / halt the chain by queuing multiple stake removals or delegate stake removals ## Summary Attacker can slow down / halt the chain by queuing multiple stake removals or delegate stake removals. ## Vulnerability Detail All stake removals and delegate stake removals for a given block are processed in the EndBlocker in a loop. Since there is no minimum restriction on the stake amount, an attacker can either : * Depending on the registration fee, register m Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "imsrybr0 - Attacker can slow down / halt the chain by queuing multiple stake removals or delegate stake removals"
+      ],
+      "sample_summaries": [
+        "Finding summary: imsrybr0 High # Attacker can slow down / halt the chain by queuing multiple stake removals or delegate stake removals ## Summary Attacker can slow down / halt the chain by queuing multiple stake removals or delegate stake removals. ## Vulnerability Detail All stake removals and delegate stake removals for a given block are processed in the EndBlocker in a loop. Since there is no minimum restriction on the stake amount, an attacker can either : * Depending on the registration fee, register m"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/56"
+    ]
+  },
+  {
+    "id": "R045",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "high",
+    "description": "Finding summary: zigtur High # Funding amount is accounted twice leading to activating topic before reaching the global minimum ## Summary The amount deposited through FundTopic is accounted twice during the topic activation calculation, leading to activating the topic too early (before reaching the minimum). ## Vulnerability Detail During the funding of a topic through FundTopic, the funded amount will be added to the topic fee revenue. It will then check if the topic has enough weight to become activ Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "zigtur - Funding amount is accounted twice leading to activating topic before reaching the global minimum"
+      ],
+      "sample_summaries": [
+        "Finding summary: zigtur High # Funding amount is accounted twice leading to activating topic before reaching the global minimum ## Summary The amount deposited through FundTopic is accounted twice during the topic activation calculation, leading to activating the topic too early (before reaching the minimum). ## Vulnerability Detail During the funding of a topic through FundTopic, the funded amount will be added to the topic fee revenue. It will then check if the topic has enough weight to become activ"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/46"
+    ]
+  },
+  {
+    "id": "R046",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: volodya High # Current APY is not stable long-term according to whitepaper ## Summary Current APY is not stable long-term according to whitepaper ## Vulnerability Detail According to whitepaper, page 13, there should be the addition of fee revenue for APY to be smooth which is not present currently >Including emission smoothing remedies this jump, resulting in a smooth evolution of the APY that incentivizes token holders to continue staking their tokens even around major unlocks (dashed li Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "volodya - Current APY is not stable long-term according to whitepaper"
+      ],
+      "sample_summaries": [
+        "Finding summary: volodya High # Current APY is not stable long-term according to whitepaper ## Summary Current APY is not stable long-term according to whitepaper ## Vulnerability Detail According to whitepaper, page 13, there should be the addition of fee revenue for APY to be smooth which is not present currently >Including emission smoothing remedies this jump, resulting in a smooth evolution of the APY that incentivizes token holders to continue staking their tokens even around major unlocks (dashed li"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/41"
+    ]
+  },
+  {
+    "id": "R047",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: ## Code Snippet Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "volodya - represents the total fee revenue collected by topic t over the preceding week"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Code Snippet"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/25"
+    ]
+  },
+  {
+    "id": "R048",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: defsec Medium # Silent Failure in MustNewDecFromString Can Lead to Node Crashes ## Summary The use of MustNewDecFromString in the AlloraExecutor's ExecuteFunction method ignores potential errors, which can lead to invalid parameters being passed to the node, causing crashes. ## Vulnerability Detail In the ExecuteFunction method of the AlloraExecutor, MustNewDecFromString is used to convert string values to decimal types. This function panics if it encounters an error during conversion, rat Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "defsec - Silent Failure in MustNewDecFromString Can Lead to Node Crashes"
+      ],
+      "sample_summaries": [
+        "Finding summary: defsec Medium # Silent Failure in MustNewDecFromString Can Lead to Node Crashes ## Summary The use of MustNewDecFromString in the AlloraExecutor's ExecuteFunction method ignores potential errors, which can lead to invalid parameters being passed to the node, causing crashes. ## Vulnerability Detail In the ExecuteFunction method of the AlloraExecutor, MustNewDecFromString is used to convert string values to decimal types. This function panics if it encounters an error during conversion, rat"
+      ],
+      "matched_patterns": [
+        "\\bdecimal\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/22"
+    ]
+  },
+  {
+    "id": "R049",
+    "status": "candidate",
+    "title": "Arithmetic, Precision, or Accounting Error",
+    "type": "arithmetic_precision",
+    "swc_id": "SWC-101",
+    "severity": "medium",
+    "description": "Finding summary: volodya Medium # topic's funds is being used twice when activating a topic ## Summary ## Vulnerability Detail AddTopicFeeRevenue adds funds to topic fee revenue and activateTopicIfWeightAtLeastGlobalMin adds more fee revenue doubling the amoun ```go func (ms msgServer) FundTopic(ctx context.Context, msg *types.MsgFundTopic) (*types.MsgFundTopicResponse, error) { ... err = ms.k.AddTopicFeeRevenue(ctx, msg.TopicId, msg.Amount) err = activateTopicIfWeightAtLeastGlobalMin(ctx, ms, msg.TopicI Generalized rule: Math, rounding, scaling, refund, fee, or accounting logic can create incorrect balances, shares, collateral values, debt values, or protocol totals.",
+    "detection_pattern": "Look for division before multiplication, unchecked blocks, mixed token decimals, rounding in favor of users, share/asset conversions, refund logic, fee logic, and total supply or reserve invariants.",
+    "example_code": "uint256 shares = assets * totalSupply / totalAssets;\n// Missing rounding direction, zero-share guard, and manipulated totalAssets protection.",
+    "exploit_scenario": [
+      "Attacker chooses amounts around precision, refund, fee, or rounding boundaries.",
+      "Protocol mints, burns, refunds, borrows, repays, or settles using lossy arithmetic.",
+      "Attacker repeats the operation or combines it with state manipulation.",
+      "Value is created, debt is understated, refunds are wrong, or balances become inconsistent."
+    ],
+    "remediation": "Use full-precision mulDiv, explicitly define rounding direction, normalize decimals, add zero-share/minimum amount guards, and enforce accounting invariants with fuzz tests.",
+    "test_template": "function testFuzzNoAccountingValueCreation(uint256 amount) public {\n    amount = bound(amount, 1, 1e36);\n    // execute accounting path\n    // assert total assets, liabilities, shares, refunds, and balances remain consistent\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "volodya - topic's funds is being used twice when activating a topic"
+      ],
+      "sample_summaries": [
+        "Finding summary: volodya Medium # topic's funds is being used twice when activating a topic ## Summary ## Vulnerability Detail AddTopicFeeRevenue adds funds to topic fee revenue and activateTopicIfWeightAtLeastGlobalMin adds more fee revenue doubling the amoun ```go func (ms msgServer) FundTopic(ctx context.Context, msg *types.MsgFundTopic) (*types.MsgFundTopicResponse, error) { ... err = ms.k.AddTopicFeeRevenue(ctx, msg.TopicId, msg.Amount) err = activateTopicIfWeightAtLeastGlobalMin(ctx, ms, msg.TopicI"
+      ],
+      "matched_patterns": [
+        "\\bfee\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/sherlock-audit/2024-06-allora-judging/issues/4"
+    ]
+  },
+  {
+    "id": "R050",
+    "status": "candidate",
+    "title": "Oracle or Price Manipulation",
+    "type": "oracle_manipulation",
+    "swc_id": "SWC-120",
+    "severity": "medium",
+    "description": "Finding summary: ## Vulnerability Details Nibiru's StateDB lacks EIP-6780 implementation, enabling multiple severe attack vectors including forced Ether injection, proxy implementation destruction, and delegate call vulnerabilities. This deviation from Ethereum's behavior could lead to permanent fund lockups and contract state manipulation. The core issue Generalized rule: Protocol logic depends on manipulable, stale, incorrectly scaled, or insufficiently validated price data.",
+    "detection_pattern": "Look for AMM spot prices, missing stale-price checks, no heartbeat validation, missing min/max bounds, wrong decimals, single-source oracle reliance, or price reads after same-block liquidity manipulation.",
+    "example_code": "uint256 price = pair.getSpotPrice();\nuint256 collateralValue = collateralAmount * price / 1e18;",
+    "exploit_scenario": [
+      "Attacker sources temporary liquidity or manipulates a low-liquidity pool.",
+      "Protocol reads the manipulated or stale price.",
+      "Collateral, debt, minting, or liquidation logic uses the bad price.",
+      "Attacker borrows, withdraws, mints, or liquidates for profit."
+    ],
+    "remediation": "Use TWAP or trusted oracle feeds, validate heartbeat/staleness, normalize decimals, apply deviation bounds, require sufficient liquidity, and avoid same-block spot prices.",
+    "test_template": "function testOracleManipulationDoesNotCreateProfit() public {\n    // manipulate mock AMM price\n    // call borrow/mint/liquidate path\n    // assert protocol rejects or uses bounded oracle value\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Missing EIP-6780 Implementation in Nibiru's StateDB Enables SELFDESTRUCT Attack Vectors"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Vulnerability Details Nibiru's StateDB lacks EIP-6780 implementation, enabling multiple severe attack vectors including forced Ether injection, proxy implementation destruction, and delegate call vulnerabilities. This deviation from Ethereum's behavior could lead to permanent fund lockups and contract state manipulation. The core issue"
+      ],
+      "matched_patterns": [
+        "\\bmanipulat\\w*\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/31"
+    ]
+  },
+  {
+    "id": "R051",
+    "status": "candidate",
+    "title": "Oracle or Price Manipulation",
+    "type": "oracle_manipulation",
+    "swc_id": "SWC-120",
+    "severity": "medium",
+    "description": "Finding summary: ## Finding description and impact The Ante handler for MsgEthereumTx transactions is responsible for ensuring messages are coming with correct nonces. After doing so, it'll increment the account's sequences for each message that the account has signed and broadcasted. The problem is that when the EthereumTx() message server method calls ApplyEvmMsg() it'll ove Generalized rule: Protocol logic depends on manipulable, stale, incorrectly scaled, or insufficiently validated price data.",
+    "detection_pattern": "Look for AMM spot prices, missing stale-price checks, no heartbeat validation, missing min/max bounds, wrong decimals, single-source oracle reliance, or price reads after same-block liquidity manipulation.",
+    "example_code": "uint256 price = pair.getSpotPrice();\nuint256 collateralValue = collateralAmount * price / 1e18;",
+    "exploit_scenario": [
+      "Attacker sources temporary liquidity or manipulates a low-liquidity pool.",
+      "Protocol reads the manipulated or stale price.",
+      "Collateral, debt, minting, or liquidation logic uses the bad price.",
+      "Attacker borrows, withdraws, mints, or liquidates for profit."
+    ],
+    "remediation": "Use TWAP or trusted oracle feeds, validate heartbeat/staleness, normalize decimals, apply deviation bounds, require sufficient liquidity, and avoid same-block spot prices.",
+    "test_template": "function testOracleManipulationDoesNotCreateProfit() public {\n    // manipulate mock AMM price\n    // call borrow/mint/liquidate path\n    // assert protocol rejects or uses bounded oracle value\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Nonce can be manipulated by inserting a contract creation EthereumTx message first in an SDK TX with multiple EthereumTX messages"
+      ],
+      "sample_summaries": [
+        "Finding summary: ## Finding description and impact The Ante handler for MsgEthereumTx transactions is responsible for ensuring messages are coming with correct nonces. After doing so, it'll increment the account's sequences for each message that the account has signed and broadcasted. The problem is that when the EthereumTx() message server method calls ApplyEvmMsg() it'll ove"
+      ],
+      "matched_patterns": [
+        "\\bmanipulat\\w*\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/29"
+    ]
+  },
+  {
+    "id": "R052",
+    "status": "candidate",
+    "title": "Reentrancy / Callback Before State Update",
+    "type": "reentrancy",
+    "swc_id": "SWC-107",
+    "severity": "medium",
+    "description": "Finding summary: ### PoC The ForEachStorage method iterates over the storage data of a contract at a given address, invoking a callback function cb for each key-value pair. This method checks both the dirty storage in the local state object and the global storage for keys. Proof idea: The ForEachStorage method iterates over the storage data of a contract at a given address, invoking a callback function cb for each key-value pair. This method checks both the dirty storage in the local state object and the global storage for keys. Generalized rule: A function performs an external interaction before finalizing internal accounting or state changes, allowing an attacker-controlled callback to re-enter and consume the same state more than once.",
+    "detection_pattern": "Look for ETH/token transfers, low-level calls, safeTransfer callbacks, ERC777 hooks, or arbitrary external calls before balance, debt, share, or status variables are updated.",
+    "example_code": "function withdraw(uint256 amount) external {\n    (bool ok,) = msg.sender.call{value: amount}(\"\");\n    require(ok);\n    balances[msg.sender] -= amount;\n}",
+    "exploit_scenario": [
+      "Attacker obtains a valid withdrawable balance.",
+      "Attacker calls the vulnerable function.",
+      "The contract transfers ETH/tokens or triggers a callback before updating state.",
+      "Attacker re-enters through fallback/hook while the old balance is still valid.",
+      "The same balance is withdrawn or consumed multiple times."
+    ],
+    "remediation": "Apply checks-effects-interactions, update all accounting before external calls, add ReentrancyGuard for cross-function reentrancy, and review token hooks such as ERC777/ERC721/ERC1155 callbacks.",
+    "test_template": "function testReentrancyBlocked() public {\n    // Deploy attacker receiver with fallback/hook that re-enters.\n    // Fund victim state.\n    // Expect revert or assert protocol balance cannot be drained twice.\n}",
+    "evidence": {
+      "finding_count": 1,
+      "sources": {
+        "code4rena": 1
+      },
+      "sample_titles": [
+        "Non-Deterministic Iteration in ForEachStorage"
+      ],
+      "sample_summaries": [
+        "Finding summary: ### PoC The ForEachStorage method iterates over the storage data of a contract at a given address, invoking a callback function cb for each key-value pair. This method checks both the dirty storage in the local state object and the global storage for keys. Proof idea: The ForEachStorage method iterates over the storage data of a contract at a given address, invoking a callback function cb for each key-value pair. This method checks both the dirty storage in the local state object and the global storage for keys."
+      ],
+      "matched_patterns": [
+        "\\bcallback\\b"
+      ],
+      "hydrated_from_github_count": 0
+    },
+    "references": [
+      "https://github.com/code-423n4/2024-11-nibiru-findings/issues/34"
+    ]
+  }
+]
