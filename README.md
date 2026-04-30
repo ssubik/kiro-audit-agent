@@ -26,7 +26,7 @@ It combines a comprehensive rulebook of more than **200** vulnerability patterns
 prompt templates, invariant test examples and CI integration to produce thorough audits.  
 Rather than focusing solely on style, it emphasises an **adversarial**, **invariant‑driven** mindset to catch issues like 
 reentrancy, access‑control failures, accounting mistakes, oracle manipulation and more.  The rules draw from the 
-Smart Contract Weakness Classification registry and best practice guides【76496444074783†L81-L94】【552525014219781†L78-L112】.
+Smart Contract Weakness Classification registry and best practice
 
 ## 📦 What's inside
 
@@ -136,12 +136,12 @@ Rank findings from most to least critical.
 }
 ```
 
-The rules cover reentrancy, access control, accounting correctness, oracle manipulation, gas griefing, time dependency, random number misuse and more【76496444074783†L81-L94】【552525014219781†L78-L112】.  
+The rules cover reentrancy, access control, accounting correctness, oracle manipulation, gas griefing, time dependency, random number misuse and more.
 Each entry includes a detection pattern so Kiro can match against ASTs or textual code, a severity rating, and references to external resources.
 
 ## 🧰 Invariant testing
 
-Foundry invariants are powerful for catching issues that static analysis might miss.  The example in `test/InvariantExample.t.sol` shows how to ensure that `totalSupply` equals the sum of all account balances—this is a basic accounting invariant【76496444074783†L81-L94】.  For each critical rule you should derive an invariant:  
+Foundry invariants are powerful for catching issues that static analysis might miss.  The example in `test/InvariantExample.t.sol` shows how to ensure that `totalSupply` equals the sum of all account balances—this is a basic accounting invariant.  For each critical rule you should derive an invariant:  
 * Collateral ≥ liabilities  
 * No free minting or burning  
 * Role assignments remain unchanged after upgrades  
