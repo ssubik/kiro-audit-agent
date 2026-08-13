@@ -1,0 +1,257 @@
+Here's the work broken into Kiro-sized units. Each task is scoped so an agent can finish it without needing decisions you haven't made yet, and each has a test that proves it landed.
+
+---
+
+# 0. Steering file (do this first)
+
+Kiro applies steering docs to every task in the repo. Without this, the agent will drift toward "helpful" defaults that defeat the point of the pipeline.
+
+Create `.kiro/steering/upgrade-safety.md`:
+
+```markdown
+---
+inclusion: fileMatch
+fileMatchPattern: 'scripts/release/**|test/upgrade/**|releases/**'
+---
+
+# Upgrade pipeline rules
+
+- Never loosen a verification check to make a test pass. If bytecode or
+  selectors don't match, the correct outcome is a thrown error.
+- Never compare bytecode with `startsWith`, a prefix match, or a
+  substring check. Full equality after immutable/library masking only.
+- Every function that sends a transaction must first assert chainId
+  against the release manifest.
+- No implicit signers. `ethers.getSigners()[0]` is forbidden outside
+  chainId 31337/1337.
+- Selector actions (ADD/UPDATE/REMOVE) are always derived from a diff
+  against on-chain routing. Never hardcode an action for all methods.
+- Errors must name the specific mismatch (which selector, which slot,
+  which byte offset). No generic "verification failed".
+- Do not add try/catch that swallows a verification failure.
+- Do not modify the existing functions in
+  scripts/audit/package-contract-upgrade-utils.js or deploy-package.js
+  unless a task explicitly says to. Wrap them instead.
+```
+
+---
+
+# Task 1 — Fix the three live bugs
+
+**Prompt:**
+
+> In `scripts/audit/package-contract-upgrade-utils.js`, fix three defects. Do not change any function signatures.
+>
+> 1. `compareVersions` accepts malformed input. `Number("")` returns 0, not NaN, so `"1..0"` currently parses as `[1,0,0]` and compares equal to `"1.0.0"`. The loop is also hardcoded to `i < 3`, so `"1.2.3.4"` compares equal to `"1.2.3"`. Replace the parsing with a strict regex `^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$` applied to the trimmed string, throwing on any non-match, and assert exactly three components.
+> 2. `getConfirmations` branches on `hre.network.name`, which is a config label and does not prove which chain the RPC is connected to. Add an exported `assertChainId(expectedChainId)` that reads `(await ethers.provider.getNetwork()).chainId` and throws a message naming both values on mismatch. Keep `getConfirmations` but have it branch on the actual chainId (31337, 1337 → 1) rather than the name.
+> 3. `getSigner` silently falls back to `ethers.getSigners()[0]`. Add an exported `assertExplicitSigner(signer, chainId)` that throws if `signer` is falsy and chainId is not 31337 or 1337.
+>
+> Write unit tests in `test/scripts/version-compare.test.js` covering: `"1..0"`, `"1.2.3.4"`, `"1.02.0"`, `"0x10.0.0"`, `""`, `null`, `"1.2"`, and the ordering cases `1.2.3 < 1.10.0` and `2.0.0 > 1.99.99`. Every malformed input must throw.
+
+**Done when:** all malformed-input tests throw; ordering tests pass; `assertChainId` throws on a deliberate mismatch.
+
+---
+
+# Task 2 — Release manifest schema and loader
+
+**Prompt:**
+
+> Create `scripts/release/manifest.js` and `schemas/release-manifest.schema.json`.
+>
+> The manifest is the single source of truth for a release. Schema fields: `schemaVersion`, `component`, `version`, `gitCommit`, `chainId`, `componentId`, `contextAddress`, `updatesRepository`, `expectedPackageAddress`, `compiler` (version, optimizer.enabled, optimizer.runs, viaIR, bytecodeHash, evmVersion), `package` (artifactPath, creationCodeHash, runtimeCodeHash, constructorArgs, libraries, immutables), `selectors` (add/update/remove, each an array of `{selector, signature}`), `migration` (required, target, calldata, reinitializerVersion), `rollback` (version, packageAddress, runtimeCodeHash, verified), `invariants` (array of `{name, call, expect}`), `criticalSlots` (array of bytes32).
+>
+> `manifest.js` exports `loadManifest(path)` which: reads the JSON, validates against the schema with ajv in strict mode, asserts every address is checksummed, asserts every selector matches `^0x[0-9a-f]{8}$`, asserts no selector appears in more than one of add/update/remove, and asserts `compiler.bytecodeHash === "none"`. Throw with the specific failing field. Also export `assertArtifactProvenance(manifest)` which recomputes `keccak256` of the artifact's creation bytecode, compares to `package.creationCodeHash`, checks `git rev-parse HEAD` equals `gitCommit`, and checks `git status --porcelain` is empty.
+>
+> Add a fixture at `releases/_fixtures/valid.json` and tests in `test/scripts/manifest.test.js` covering each rejection path.
+
+**Done when:** valid fixture loads; each mutation of the fixture (bad checksum, uppercase selector, duplicated selector across add/remove, `bytecodeHash: "ipfs"`) throws with a message naming the field.
+
+**Note:** the agent cannot know your real `componentId` or `updatesRepository` addresses. Fixtures only — you fill in real values.
+
+---
+
+# Task 3 — Pin compiler settings
+
+**Prompt:**
+
+> In `foundry.toml` under `[profile.default]`, set and pin: `solc_version`, `optimizer`, `optimizer_runs`, `via_ir`, `evm_version`, `bytecode_hash = "none"`, `ffi = true`, `ast = true`, `build_info = true`, `extra_output = ["storageLayout"]`. Do not guess `solc_version` or `evm_version` — read the current values from the existing config and pragma statements and preserve them.
+>
+> Add `scripts/ci/check-compiler-pinned.js` which parses `foundry.toml` and fails if any of those keys is absent or if `bytecode_hash` is not `"none"`. Explain in a comment why `bytecode_hash = "none"` is required: solc appends a CBOR metadata hash to runtime bytecode that changes on any source or path edit, which makes byte-for-byte comparison fail spuriously.
+
+**Done when:** `forge build --force` succeeds; the check script passes; removing any pinned key makes it fail.
+
+---
+
+# Task 4 — Bytecode verification
+
+**Prompt:**
+
+> Create `scripts/release/bytecode.js` exporting `verifyDeployedBytecode(manifest, packageAddress)`.
+>
+> It must: throw if `eth_getCode` returns `0x`; throw if the artifact's `deployedBytecode.object` contains `__$` (unlinked library placeholder); mask the byte ranges listed in the artifact's `immutableReferences` to zero in **both** the expected and on-chain code before comparing; compare with full string equality, not a prefix or substring match; on mismatch report the byte offset of the first difference and 16 bytes of context from each side; on match compute `keccak256` of the on-chain code and assert it equals `manifest.package.runtimeCodeHash`, returning the hash.
+>
+> Tests in `test/scripts/bytecode.test.js` against a local Hardhat node: (a) deploy a contract and verify it passes; (b) deploy a different contract at the same manifest and assert it throws; (c) deploy a contract with an `immutable` and assert masking makes it pass; (d) assert a truncated-code case throws rather than passing on a prefix match.
+
+**Done when:** case (d) throws — that's the one that proves the comparison isn't accidentally lenient.
+
+---
+
+# Task 5 — Selector diff engine
+
+This is the most important task. Give it its own session.
+
+**Prompt:**
+
+> Create `scripts/release/selectors.js`. This replaces the loop in `publishPackageUpdate` that pushes `Action.UPDATE` for every method.
+>
+> Export `getCurrentRouting(repo, componentId)` returning a `Map<selector, packageAddress>` read from the `UpdatesRepository`. Use the `IUpdatesRepository` ABI at `updates-repository-contracts/out/IUpdatesRepository.sol/IUpdatesRepository.json` — read it and use the actual method names; do not invent them. If no method exists to enumerate current routing for a component, stop and report that instead of guessing.
+>
+> Export `computeSelectorDiff(manifest, packageAddress)` which performs, in order, and throws on any failure:
+> 1. Derive the selector set from the artifact ABI.
+> 2. Read `getPackageMethods()` from the deployed package and assert it equals the ABI set. The current code trusts this call as the source of truth; here it is a value being checked.
+> 3. Assert `manifest.selectors.add ∪ manifest.selectors.update` equals the ABI set.
+> 4. Build `methods[]` and `actions[]`: selectors absent from current routing get `Action.ADD`, present ones get `Action.UPDATE`, and `manifest.selectors.remove` entries get `Action.REMOVE` after asserting each is currently registered.
+> 5. Orphan check: any selector currently routing to `manifest.rollback.packageAddress` that appears in neither `methods[]` nor the remove list is an orphan — throw and list them.
+> 6. Return `{ methods, actions, plan }` where `plan` is a human-readable array of `{selector, signature, action, from, to}`.
+>
+> Also export `assertNoCollisions(repo, componentId, selectors, packageAddress)` which throws if any intended selector is currently owned by a package that is neither the target nor its declared predecessor.
+>
+> Tests in `test/scripts/selectors.test.js` with a mocked routing map: pure addition, pure update, mixed add+update+remove, an orphaned selector, a removal of an unregistered selector, an ABI/`getPackageMethods()` disagreement, and a collision with a sibling package. Every failure case must throw with the offending selector named.
+
+**Done when:** the orphan test and the ABI-disagreement test both throw. Those two are the defects in the current code.
+
+---
+
+# Task 6 — Repo-wide selector collision scan
+
+**Prompt:**
+
+> Create `scripts/ci/check-selector-collisions.js`. Compile all packages, extract every external/public function selector per package from the build artifacts, and fail if two packages that are registered under the same component export the same 4-byte selector. Component grouping comes from a new `releases/components.json` mapping component name → list of package contract names; create it with a documented empty structure and a TODO, since the mapping is a human decision.
+>
+> Output a table of every collision with both contract names and both full signatures. Exit non-zero on any collision.
+
+**Done when:** it runs in CI and passes on the current repo; adding a deliberate colliding function to two packages in the same component makes it fail.
+
+---
+
+# Task 7 — State snapshot and post-upgrade verification
+
+**Prompt:**
+
+> Create `scripts/release/snapshot.js` exporting `captureState(manifest, contextAddress)` and `compareState(before, after, manifest, expectedPackageAddress)`.
+>
+> `captureState` returns `{block, values, routing, rawSlots}`: `values` from calling each `manifest.invariants[].call` as a view; `routing` from `getCurrentRouting`; `rawSlots` from `eth_getStorageAt` for each entry in `manifest.criticalSlots`.
+>
+> `compareState` collects **all** failures before throwing (do not throw on the first). It must check: every invariant marked `preserved` is unchanged; every invariant with a literal expectation matches; every selector in add/update routes to `expectedPackageAddress`; every selector in remove is gone from routing; every raw slot is unchanged; and — importantly — that no selector outside the declared change set changed its routing at all. Label that last case `UNEXPECTED CHANGE`.
+>
+> Tests in `test/scripts/snapshot.test.js` using hand-built before/after objects, one test per failure category, plus one where an undeclared selector moved.
+
+**Done when:** the `UNEXPECTED CHANGE` test throws. That's the check that catches accidentally upgrading an extra function, which nothing currently does.
+
+---
+
+# Task 8 — Verified deploy and publish orchestrators
+
+**Prompt:**
+
+> Create `scripts/release/deploy.js` and `scripts/release/publish.js`. These wrap the existing `deployPackage` and `publishPackageUpdate` — do not rewrite those functions.
+>
+> `deployVerifiedPackage({manifestPath, signer})`: load manifest → `assertChainId` → `assertExplicitSigner` → `assertArtifactProvenance` → call existing `deployPackage` → `verifyDeployedBytecode` → assert the deployed address equals `manifest.expectedPackageAddress` if that field is set, otherwise write it back into the manifest → wait for the block to be finalized via `eth_getBlockByNumber("finalized")` on non-local chains → return `{address, txHash, blockNumber, runtimeCodeHash}`.
+>
+> `publishVerifiedUpdate({manifestPath, signer, packageAddress})`: load manifest → `assertChainId` → `assertExplicitSigner` → `verifyDeployedBytecode` again (code may have changed since deploy) → cross-check `componentId` by calling the existing `resolveComponentId(manifest.contextAddress, manifest.updatesRepository)` and throwing if it disagrees with `manifest.componentId` → `computeSelectorDiff` → `assertNoCollisions` → print the `plan` table and require `--yes` or a TTY confirmation → `staticCall` the publish transaction first and throw on revert → call the existing `publishPackageUpdate` with the computed `methods`/`actions` rather than its internally generated ones → decode the emitted event from the receipt and assert its fields match the manifest.
+>
+> If `publishPackageUpdate`'s current signature can't accept externally computed methods/actions, add an optional parameter with a default that preserves existing behaviour.
+
+**Done when:** running `publishVerifiedUpdate` with a manifest whose `componentId` is wrong throws before sending anything.
+
+---
+
+# Task 9 — Verified upgrade with re-pinning and rollback flag
+
+**Prompt:**
+
+> Create `scripts/release/upgrade.js` exporting `runVerifiedUpgrade({manifestPath, signer, allowDowngrade = false})`, wrapping the existing `runUpgrade`.
+>
+> Sequence: load manifest → `assertChainId` → `assertExplicitSigner` → resolve the target version through the `UpdatesRepository` to a package address and assert it equals `manifest.expectedPackageAddress` → recompute `keccak256(eth_getCode(resolved))` and assert it equals `manifest.package.runtimeCodeHash` (this closes the window between publish and execute) → `captureState` → check current version, and if `compareVersions(current, target) >= 0` throw **unless** `allowDowngrade` is true → `staticCall` the upgrade → send → wait for finality → `captureState` again → `compareState`, and on failure print `manifest.rollback` prominently before rethrowing → write a release record to `releases/<component>/<version>.record.json` containing manifest hash, tx hashes, block numbers, before/after snapshots.
+>
+> Note in a comment that the existing `runUpgrade` skips silently when current >= target, which disables rollback; `allowDowngrade` is the escape hatch.
+
+**Done when:** the re-pinning check throws if you point the manifest at a version whose resolved code hash differs.
+
+---
+
+# Task 10 — Fork rehearsal harness
+
+**Prompt:**
+
+> Create `test/upgrade/UpgradeRehearsal.t.sol`.
+>
+> `setUp` forks from `vm.envString("FORK_RPC")` at `vm.envUint("FORK_BLOCK")` and reads `CONTEXT_ADDRESS`, `UPDATES_REPOSITORY`, and `ADMIN` from env.
+>
+> Tests:
+> - `test_UpgradePreservesState`: snapshot critical view values and raw slots, `vm.startPrank(ADMIN)`, perform deploy + publish + `updateToSpecificVersion`, assert values and slots are unchanged.
+> - `test_RoutingMatchesExpectation`: after upgrade, assert every changed selector resolves to the new package and every unchanged selector resolves to what it did before.
+> - `test_RollbackAfterUpgrade`: upgrade, exercise a V2-only write path, roll back to the previous version, assert V1 reads are coherent. If they aren't, the test should fail loudly — that tells you rollback is unavailable for this release.
+>
+> Add `test/upgrade/UpgradeRehearsalInvariant.t.sol` whose `setUp` forks, performs the upgrade, then targets the **existing** CA_A/CA_B invariant handlers. Reuse those handlers by import — do not write new ones.
+>
+> Add a `make rehearse` target that runs `forge clean`, `forge build --force`, then both files.
+
+**Done when:** the invariant file runs your existing handlers against post-upgrade forked state. If the handlers need refactoring to be importable, do that refactor and keep the original tests passing.
+
+---
+
+# Task 11 — Safe transaction emission
+
+**Prompt:**
+
+> Create `scripts/release/safe.js` exporting `emitSafeTx(manifest, {to, data, safeAddress})`.
+>
+> Build the EIP-712 SafeTx struct (to, value, data, operation, safeTxGas, baseGas, gasPrice, gasToken, refundReceiver, nonce read from the Safe). Compute `domainSeparator` and `safeTxHash` with `ethers.TypedDataEncoder`. Write `releases/<component>/<version>/safe-tx.json` containing the struct, both hashes, the chainId, and a `decoded` block describing in plain English what the transaction does (function name, target version, count of selectors added/updated/removed).
+>
+> Also write `releases/<component>/<version>/VERIFY.md`: step-by-step instructions for a signer to independently recompute the hash using `pcaversaccio/safe-tx-hashes-util` and compare it to the hardware wallet display, with an explicit instruction not to approve on mismatch.
+>
+> Change `upgrade.js` so that on non-local chains without an explicit `--execute` flag, it emits the Safe transaction and exits **without sending**.
+
+**Done when:** running against a production chain produces the JSON and exits zero without broadcasting.
+
+---
+
+# Task 12 — CI wiring
+
+**Prompt:**
+
+> Create `.github/workflows/upgrade-validation.yml` triggered on PRs touching `contracts/**`, `releases/**`, or `scripts/release/**`.
+>
+> Steps in order, each failing the build: `forge clean && forge build --force`; `npx @openzeppelin/upgrades-core validate out/build-info`; `slither-check-upgradeability`; `node scripts/ci/check-compiler-pinned.js`; `node scripts/ci/check-selector-collisions.js`; `node scripts/ci/check-namespaced-storage.js`; `node scripts/ci/check-initializer-versions.js`; the existing unit and integration suites; `forge test --match-path 'test/upgrade/*'`.
+>
+> Create `check-namespaced-storage.js`: parse each package's storage layout from build artifacts and fail if any package declares plain (non-namespaced) state variables. Emit a clear message explaining that packages share the context's storage via delegatecall, so plain state variables can collide across packages, and that ERC-7201 namespaces avoid this.
+>
+> Create `check-initializer-versions.js`: find every `reinitializer(n)` in the diff and assert `n` is strictly greater than the value recorded in the previous release manifest for that component.
+
+**Done when:** the workflow passes on a clean branch. If `check-namespaced-storage.js` fails on the existing repo, **don't fix it by weakening the check** — report the list and stop.
+
+---
+
+# Task 13 — Atomic upgrade + migration (do this one yourself, with Kiro assisting)
+
+This one touches contracts and needs your judgment, so scope it narrowly:
+
+**Prompt:**
+
+> Read the `IUpgradable` interface at `updates-repository-contracts/out/IUpgradable.sol/IUpgradable.json` and the implementing contract. Report only — do not modify anything:
+> 1. Is there any variant of `updateToSpecificVersion` that also executes an initialization call in the same transaction?
+> 2. Does the context contract have a pause mechanism that halts user-facing selectors?
+> 3. Do the package contracts call `_disableInitializers()` in their constructors?
+>
+> For each, quote the relevant code and give the file and line.
+
+Then decide, based on that report, whether you're adding `updateToSpecificVersionAndCall` or accepting a pause-upgrade-migrate-unpause sequence. Both are contract changes and shouldn't be agent-authored unreviewed.
+
+---
+
+## Sequencing
+
+Run 1 → 2 → 3 in one sitting; they're small and everything else depends on them. Then 4, 5, 7 (the three verification primitives) — give task 5 a fresh session, it's the meatiest. Then 8 and 9 to wire them together. 10, 11, 12 can go in any order after that. 6 is independent and can be slotted anywhere. 13 last.
+
+One thing to watch: Kiro will be tempted to make failing checks pass. The steering file addresses this, but when you review each task, the question to ask is "did it weaken an assertion to get green?" — particularly on tasks 4, 5, and 12.
