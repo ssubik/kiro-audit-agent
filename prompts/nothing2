@@ -1,0 +1,273 @@
+I want you to review and improve the production upgrade flow in this Solidity codebase.
+
+## Context
+
+This codebase already has a custom upgrade architecture. Do NOT replace it with OpenZeppelin proxies or redesign the upgrade mechanism.
+
+The system uses concepts such as:
+
+* `UpdatesRepository`
+* `UpgradablePackage`
+* component/package registration
+* selector-based implementation replacement/routing
+* `batchPublishUpdates(...)`
+* versioned update packages
+
+First, inspect the existing contracts, deployment scripts, upgrade scripts, tests, and configuration to understand exactly how upgrades currently work.
+
+Do not make assumptions about the architecture. Trace the actual upgrade flow from the repository.
+
+## Goal
+
+I want a robust and safe **production/mainnet upgrade pipeline** around the existing architecture.
+
+Do NOT build fork testing as part of this task.
+
+Focus specifically on taking an already tested and approved release and safely upgrading production.
+
+## What I want you to investigate/build
+
+### 1. Understand the existing upgrade mechanism
+
+Document concisely:
+
+* how implementations/components are deployed
+* how packages are registered
+* how versions are published
+* how selectors are mapped/replaced
+* how `batchPublishUpdates(...)` works
+* who has permission to perform upgrades
+* what state changes during an upgrade
+* what existing deployment/upgrade scripts already provide
+
+Do not duplicate functionality that already exists.
+
+### 2. Upgrade Manifest
+
+Determine whether we should introduce a machine-readable upgrade manifest.
+
+It should capture, where applicable:
+
+* package/component
+* current version
+* target version
+* previous implementation
+* new implementation
+* selectors added
+* selectors replaced
+* selectors removed
+* deployment addresses
+* expected runtime bytecode/hash
+* network/chain ID
+
+The manifest should represent the exact intended upgrade and become the input/source of truth for production verification where practical.
+
+### 3. Selector Diff + Validation
+
+This is particularly important because this system uses selector-based routing.
+
+Build or propose tooling that can determine:
+
+* selectors currently registered
+* selectors expected after the upgrade
+* selectors added
+* selectors replaced
+* selectors removed
+* selectors unexpectedly changed
+
+Example output:
+
+LoanPackage
+
+Current version: 1.2.0
+Target version: 2.0.0
+
+REPLACED
+borrow(uint256)      OldImplementation -> LoanPackageEnhanced
+repay(uint256)       OldImplementation -> LoanPackageEnhanced
+
+ADDED
+liquidateV2(...)     -> LoanPackageEnhanced
+
+REMOVED
+None
+
+UNCHANGED
+...
+
+The production pipeline should fail if actual selector changes differ from the approved upgrade.
+
+### 4. Deployment Bytecode Verification
+
+After deploying a new implementation, verify that the contract deployed at that address is exactly the implementation we intended to deploy.
+
+Investigate the best way to compare:
+
+* locally compiled runtime bytecode
+* deployed runtime bytecode
+* compiler/settings
+* linked libraries where relevant
+
+Do not rely only on the deployment transaction succeeding.
+
+A mismatch must fail the upgrade process.
+
+### 5. Pre-Upgrade Mainnet Validation
+
+Before executing the upgrade transaction, verify the current on-chain state matches our assumptions.
+
+At minimum investigate checking:
+
+* correct chain ID
+* expected current package/version
+* expected current implementations
+* expected current selector routing
+* correct upgrade authority/admin
+* new implementation addresses exist
+* new implementations have expected bytecode
+
+If the current production state differs from the expected starting state, STOP rather than attempting the upgrade.
+
+### 6. Deterministic Upgrade Calldata
+
+Investigate how our existing upgrade scripts construct `batchPublishUpdates(...)`.
+
+I want the production upgrade transaction to be deterministic and reviewable.
+
+Ideally:
+
+approved upgrade definition/manifest
+↓
+validate current state
+↓
+generate exact upgrade calldata
+↓
+human/multisig review
+↓
+execute that exact calldata
+
+Do not introduce unnecessary abstraction if the existing scripts already provide most of this.
+
+### 7. Post-Upgrade Verification
+
+Build/propose a read-only verifier that runs immediately after the production upgrade.
+
+It should verify things such as:
+
+* expected package/version
+* expected implementation addresses
+* expected selector -> implementation routing
+* selectors intended to be added exist
+* selectors intended to be replaced point to the new implementation
+* removed selectors are actually removed, if applicable
+* no unintended selector changes occurred
+* upgrade authority/admin remains correct
+* important configuration remains unchanged
+* deployed implementation bytecode still matches the approved implementation
+
+Produce a clear:
+
+PASS / FAIL
+
+with the reason for every failure.
+
+### 8. Smoke Checks
+
+Keep these small and preferably read-only.
+
+Determine a few appropriate production sanity checks from the actual codebase, such as:
+
+* reading an existing agreement/entity
+* reading balances/state
+* querying roles
+* calling important view functions
+
+Do NOT turn this into another integration test suite.
+
+### 9. Upgrade Report
+
+After a successful upgrade, generate/save a concise report containing:
+
+* network
+* chain ID
+* release/version
+* commit if available
+* previous version
+* new version
+* implementation addresses
+* deployment transaction hashes
+* upgrade transaction hash
+* block number
+* selector changes
+* bytecode verification result
+* post-upgrade verification result
+* smoke-check result
+
+### 10. Rollback Information
+
+Do NOT automatically execute rollback.
+
+Determine what information should be preserved so an emergency rollback can be constructed safely, particularly:
+
+* previous implementations
+* previous selector mappings
+* previous package/version information
+* previous upgrade manifest/state
+
+## Intended Production Flow
+
+I am roughly targeting:
+
+Approved Release
+↓
+Load Upgrade Manifest / Definition
+↓
+Validate Current Production State
+↓
+Deploy New Implementation
+↓
+Verify Deployed Bytecode
+↓
+Generate Exact Upgrade Calldata
+↓
+Review / Multisig Approval
+↓
+Execute Upgrade
+↓
+Post-Upgrade Verification
+↓
+Smoke Checks
+↓
+Generate Upgrade Report
+
+However, do not blindly implement this structure.
+
+First inspect the existing repository and tell me what is already covered, what is missing, and whether any steps should be reordered based on how this particular upgrade architecture works.
+
+## Important Constraints
+
+* Do NOT redesign the existing upgrade architecture.
+* Do NOT migrate us to OpenZeppelin proxies.
+* Do NOT include mainnet fork testing in this task.
+* Do NOT add unnecessary complexity.
+* Prefer extending existing scripts/utilities over creating duplicate infrastructure.
+* Production verification should be deterministic and fail-fast.
+* Prefer read-only verification wherever possible.
+* Clearly distinguish deployment, upgrade execution, and post-upgrade verification.
+* Do not make production upgrade scripts depend on running the full test suite.
+* Do not make assumptions: verify everything against the actual repository.
+
+## First Step
+
+Do NOT start implementing immediately.
+
+First:
+
+1. inspect the existing upgrade-related contracts and scripts;
+2. explain the current upgrade architecture back to me;
+3. identify what production-safety functionality already exists;
+4. identify the gaps;
+5. propose the minimum robust production upgrade flow;
+6. list the exact files you would add or modify.
+
+Wait for my approval before making code changes.
